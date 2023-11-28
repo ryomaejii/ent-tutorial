@@ -31,6 +31,9 @@ func Todo() {
     if err != nil {
         log.Fatalf("failed creating a todo: %v", err)
     }
+    if err := task2.Update().SetParent(task1).Exec(ctx); err != nil {
+        log.Fatalf("failed connecting todo2 to its parent: %v", err)
+    }
     fmt.Printf("%d: %q\n", task2.ID, task2.Text)
     // Output:
     // 1: "Add GraphQL Example"
