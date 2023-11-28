@@ -10,7 +10,7 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
-func Example_Todo() {
+func Todo() {
     // Create an ent.Client with in-memory SQLite database.
     client, err := ent.Open(dialect.SQLite, "file:ent?mode=memory&cache=shared&_fk=1")
     if err != nil {
