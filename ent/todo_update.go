@@ -27,6 +27,55 @@ func (tu *TodoUpdate) Where(ps ...predicate.Todo) *TodoUpdate {
 	return tu
 }
 
+// SetText sets the "text" field.
+func (tu *TodoUpdate) SetText(s string) *TodoUpdate {
+	tu.mutation.SetText(s)
+	return tu
+}
+
+// SetNillableText sets the "text" field if the given value is not nil.
+func (tu *TodoUpdate) SetNillableText(s *string) *TodoUpdate {
+	if s != nil {
+		tu.SetText(*s)
+	}
+	return tu
+}
+
+// SetStatus sets the "status" field.
+func (tu *TodoUpdate) SetStatus(t todo.Status) *TodoUpdate {
+	tu.mutation.SetStatus(t)
+	return tu
+}
+
+// SetNillableStatus sets the "status" field if the given value is not nil.
+func (tu *TodoUpdate) SetNillableStatus(t *todo.Status) *TodoUpdate {
+	if t != nil {
+		tu.SetStatus(*t)
+	}
+	return tu
+}
+
+// SetPriority sets the "priority" field.
+func (tu *TodoUpdate) SetPriority(i int) *TodoUpdate {
+	tu.mutation.ResetPriority()
+	tu.mutation.SetPriority(i)
+	return tu
+}
+
+// SetNillablePriority sets the "priority" field if the given value is not nil.
+func (tu *TodoUpdate) SetNillablePriority(i *int) *TodoUpdate {
+	if i != nil {
+		tu.SetPriority(*i)
+	}
+	return tu
+}
+
+// AddPriority adds i to the "priority" field.
+func (tu *TodoUpdate) AddPriority(i int) *TodoUpdate {
+	tu.mutation.AddPriority(i)
+	return tu
+}
+
 // Mutation returns the TodoMutation object of the builder.
 func (tu *TodoUpdate) Mutation() *TodoMutation {
 	return tu.mutation
@@ -59,7 +108,25 @@ func (tu *TodoUpdate) ExecX(ctx context.Context) {
 	}
 }
 
+// check runs all checks and user-defined validators on the builder.
+func (tu *TodoUpdate) check() error {
+	if v, ok := tu.mutation.Text(); ok {
+		if err := todo.TextValidator(v); err != nil {
+			return &ValidationError{Name: "text", err: fmt.Errorf(`ent: validator failed for field "Todo.text": %w`, err)}
+		}
+	}
+	if v, ok := tu.mutation.Status(); ok {
+		if err := todo.StatusValidator(v); err != nil {
+			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "Todo.status": %w`, err)}
+		}
+	}
+	return nil
+}
+
 func (tu *TodoUpdate) sqlSave(ctx context.Context) (n int, err error) {
+	if err := tu.check(); err != nil {
+		return n, err
+	}
 	_spec := sqlgraph.NewUpdateSpec(todo.Table, todo.Columns, sqlgraph.NewFieldSpec(todo.FieldID, field.TypeInt))
 	if ps := tu.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
@@ -67,6 +134,18 @@ func (tu *TodoUpdate) sqlSave(ctx context.Context) (n int, err error) {
 				ps[i](selector)
 			}
 		}
+	}
+	if value, ok := tu.mutation.Text(); ok {
+		_spec.SetField(todo.FieldText, field.TypeString, value)
+	}
+	if value, ok := tu.mutation.Status(); ok {
+		_spec.SetField(todo.FieldStatus, field.TypeEnum, value)
+	}
+	if value, ok := tu.mutation.Priority(); ok {
+		_spec.SetField(todo.FieldPriority, field.TypeInt, value)
+	}
+	if value, ok := tu.mutation.AddedPriority(); ok {
+		_spec.AddField(todo.FieldPriority, field.TypeInt, value)
 	}
 	if n, err = sqlgraph.UpdateNodes(ctx, tu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -86,6 +165,55 @@ type TodoUpdateOne struct {
 	fields   []string
 	hooks    []Hook
 	mutation *TodoMutation
+}
+
+// SetText sets the "text" field.
+func (tuo *TodoUpdateOne) SetText(s string) *TodoUpdateOne {
+	tuo.mutation.SetText(s)
+	return tuo
+}
+
+// SetNillableText sets the "text" field if the given value is not nil.
+func (tuo *TodoUpdateOne) SetNillableText(s *string) *TodoUpdateOne {
+	if s != nil {
+		tuo.SetText(*s)
+	}
+	return tuo
+}
+
+// SetStatus sets the "status" field.
+func (tuo *TodoUpdateOne) SetStatus(t todo.Status) *TodoUpdateOne {
+	tuo.mutation.SetStatus(t)
+	return tuo
+}
+
+// SetNillableStatus sets the "status" field if the given value is not nil.
+func (tuo *TodoUpdateOne) SetNillableStatus(t *todo.Status) *TodoUpdateOne {
+	if t != nil {
+		tuo.SetStatus(*t)
+	}
+	return tuo
+}
+
+// SetPriority sets the "priority" field.
+func (tuo *TodoUpdateOne) SetPriority(i int) *TodoUpdateOne {
+	tuo.mutation.ResetPriority()
+	tuo.mutation.SetPriority(i)
+	return tuo
+}
+
+// SetNillablePriority sets the "priority" field if the given value is not nil.
+func (tuo *TodoUpdateOne) SetNillablePriority(i *int) *TodoUpdateOne {
+	if i != nil {
+		tuo.SetPriority(*i)
+	}
+	return tuo
+}
+
+// AddPriority adds i to the "priority" field.
+func (tuo *TodoUpdateOne) AddPriority(i int) *TodoUpdateOne {
+	tuo.mutation.AddPriority(i)
+	return tuo
 }
 
 // Mutation returns the TodoMutation object of the builder.
@@ -133,7 +261,25 @@ func (tuo *TodoUpdateOne) ExecX(ctx context.Context) {
 	}
 }
 
+// check runs all checks and user-defined validators on the builder.
+func (tuo *TodoUpdateOne) check() error {
+	if v, ok := tuo.mutation.Text(); ok {
+		if err := todo.TextValidator(v); err != nil {
+			return &ValidationError{Name: "text", err: fmt.Errorf(`ent: validator failed for field "Todo.text": %w`, err)}
+		}
+	}
+	if v, ok := tuo.mutation.Status(); ok {
+		if err := todo.StatusValidator(v); err != nil {
+			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "Todo.status": %w`, err)}
+		}
+	}
+	return nil
+}
+
 func (tuo *TodoUpdateOne) sqlSave(ctx context.Context) (_node *Todo, err error) {
+	if err := tuo.check(); err != nil {
+		return _node, err
+	}
 	_spec := sqlgraph.NewUpdateSpec(todo.Table, todo.Columns, sqlgraph.NewFieldSpec(todo.FieldID, field.TypeInt))
 	id, ok := tuo.mutation.ID()
 	if !ok {
@@ -158,6 +304,18 @@ func (tuo *TodoUpdateOne) sqlSave(ctx context.Context) (_node *Todo, err error) 
 				ps[i](selector)
 			}
 		}
+	}
+	if value, ok := tuo.mutation.Text(); ok {
+		_spec.SetField(todo.FieldText, field.TypeString, value)
+	}
+	if value, ok := tuo.mutation.Status(); ok {
+		_spec.SetField(todo.FieldStatus, field.TypeEnum, value)
+	}
+	if value, ok := tuo.mutation.Priority(); ok {
+		_spec.SetField(todo.FieldPriority, field.TypeInt, value)
+	}
+	if value, ok := tuo.mutation.AddedPriority(); ok {
+		_spec.AddField(todo.FieldPriority, field.TypeInt, value)
 	}
 	_node = &Todo{config: tuo.config}
 	_spec.Assign = _node.assignValues
